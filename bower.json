@@ -1,0 +1,25 @@
+{
+  "name": "tictactoe",
+  "description": "Multiplayer game",
+  "main": "app.js",
+  "authors": [
+    "Saurabh Kumar <09saurabh09@gmail.com>"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "tictactoe",
+    "multiplayer",
+    "game"
+  ],
+  "homepage": "https://github.com/09saurabh09/TicTacToe",
+  "moduleType": [
+    "globals"
+  ],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
