@@ -12,8 +12,10 @@ var app = express();
 
 var routes = require('./routes/router');
 var configDB = require('./config/database.js');
-require('./config/passport')(passport);  //pass passport for configuration
+
 require('./config/wiring.js'); // For making models and controllers globally accessible
+
+require('./config/passport')(passport);  //pass passport for configuration
 
 
 // configuration ===============================================================

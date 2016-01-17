@@ -6,7 +6,6 @@ var credentialObj = JSON.parse(fs.readFileSync(filePath, 'utf8'));
 
 module.exports = {
 
-    'url' : 'mongodb://'+credentialObj.mongo.username+':'+credentialObj.mongo.password+'@kahana.mongohq.com:'
-            +credentialObj.mongo.port+'/'+credentialObj.mongo.dbName
+    'url' : credentialObj.mongo.url
 
 };

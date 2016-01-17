@@ -1,10 +1,14 @@
 var express = require('express');
+var passport = require('passport');
 var router = express.Router();
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
+  console.log("hi");
+  console.log(req.session);
   console.log(req.user);
-  res.send('HomePage')
+  res.render('pages/home');
+  //res.send('HomePage')
 
 });
 
@@ -15,6 +19,24 @@ router.post('/api/users/signup', function(req, res, next) {
 
 router.post('/api/users/signin', function(req, res, next) {
   userController.login(req,res);
+
+});
+
+//router.get('/auth/facebook', function(req, res, next) {
+//  userController.facebookLogin(req,res);
+//
+//});
+
+router.get('/auth/facebook', passport.authenticate('facebook', { scope : 'email' }));
+//
+//router.get('/auth/facebook/callback',
+//    passport.authenticate('facebook', {
+//      successRedirect : '/profile',
+//      failureRedirect : '/'
+//    }));
+
+router.get('/auth/facebook/callback', function(req, res, next) {
+  userController.facebookLoginCallback(req,res);
 
 });
 
