@@ -9,9 +9,12 @@ var passport = require('passport');
 var session      = require('express-session');
 
 var app = express();
+var server = require('http').Server(app);
+var io = require('socket.io')(server);
 
 var routes = require('./routes/router');
 var configDB = require('./config/database.js');
+
 
 require('./config/wiring.js'); // For making models and controllers globally accessible
 
@@ -40,7 +43,7 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use('/public', express.static(path.join(__dirname, '/public')));
 app.use('/bower_components',  express.static(__dirname + '/bower_components'));
 
 app.use('/', routes);
@@ -76,7 +79,11 @@ app.use(function(err, req, res, next) {
   });
 });
 
-app.listen(8000, function(err) {
+io.on('connection', function(socket){
+  console.log('a user connected');
+});
+
+server.listen(8000, function(err) {
   if(err) {
     console.log("Error in starting server");
   } else {
