@@ -46,7 +46,7 @@ module.exports = {
                 console.log('Success ::: FB login/Signup successful for : '+ user.facebook.email);
                 req.logIn(user, function(err) {
                     if (err) { return next(err); }
-                    return res.send(user);
+                    return res.redirect('/');
                 });
             }
             else {

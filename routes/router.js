@@ -4,11 +4,7 @@ var router = express.Router();
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  console.log("hi");
-  console.log(req.session);
-  console.log(req.user);
-  res.render('pages/home');
-  //res.send('HomePage')
+  homeController.home(req, res, next);
 
 });
 

@@ -20,13 +20,11 @@ module.exports = function(passport) {
 
     // used to serialize the user for the session
     passport.serializeUser(function(user, done) {
-        console.log("serila user "+user);
         done(null, user.id);
     });
 
     // used to deserialize the user
     passport.deserializeUser(function(id, done) {
-        console.log("deserial id "+id);
         userModel.findById(id, function(err, user) {
             done(err, user);
         });
@@ -45,7 +43,6 @@ module.exports = function(passport) {
             passReqToCallback : true // allows us to pass back the entire request to the callback
         },
         function(req, email, password, done) {
-            console.log("signup");
             // asynchronous
             // User.findOne wont fire unless data is sent back
             process.nextTick(function() {
@@ -69,6 +66,7 @@ module.exports = function(passport) {
                         // set the user's local credentials
                         newUser.local.email    = email;
                         newUser.local.password = newUser.generateHash(password);
+                        newUser.local.name = req.body.name;
 
                         // save the user
                         newUser.save(function(err) {
@@ -156,6 +154,11 @@ module.exports = function(passport) {
                         newUser.facebook.token = token; // we will save the token that facebook provides to the user
                         newUser.facebook.name  = profile.name.givenName + ' ' + profile.name.familyName; // look at the passport user profile to see how names are returned
                         newUser.facebook.email = profile.emails[0].value; // facebook can return multiple emails so we'll take the first
+
+                        // Update local profile also, if not updated
+                        newUser.local.email = profile.emails[0].value;
+                        newUser.local.firstName  = profile.name.givenName;
+                        newUser.local.lastName  = profile.name.familyName;
 
                         // save our user to the database
                         newUser.save(function(err) {
