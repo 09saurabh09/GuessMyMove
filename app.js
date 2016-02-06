@@ -7,6 +7,7 @@ var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
 var passport = require('passport');
 var session      = require('express-session');
+var RedisStore = require('connect-redis')(session);
 
 var app = express();
 
@@ -19,7 +20,7 @@ require('./config/passport')(passport);  //pass passport for configuration
 
 
 // configuration ===============================================================
-mongoose.connect(configDB.url, function(err) {
+mongoose.connect(configDB.mongoUrl, function(err) {
   if(err) {
     console.log('Error connecting to mongo');
   } else {
@@ -33,7 +34,12 @@ app.set('view engine', 'ejs');
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
-app.use(session({ secret: 'ilovescotchscotchyscotchscotch' })); // session secret
+app.use(session({ store: new RedisStore({
+  host: configDB.redisHost,
+  port: configDB.redisPort,
+  pass: configDB.redisPassword
+}), secret: 'ilovescotchscotchyscotchscotch' }));
+
 app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
 app.use(logger('dev'));
