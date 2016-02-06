@@ -6,6 +6,9 @@ var credentialObj = JSON.parse(fs.readFileSync(filePath, 'utf8'));
 
 module.exports = {
 
-    'url' : credentialObj.mongo.url
+    'mongoUrl' : credentialObj.mongo.url,
+    'redisHost' : credentialObj.redis.host,
+    'redisPort' : credentialObj.redis.port,
+    'redisPassword' : credentialObj.redis.password
 
 };
