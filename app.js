@@ -20,7 +20,7 @@ var configDB = require('./config/database.js');
 require('./config/wiring.js'); // For making models and controllers globally accessible
 
 require('./config/passport')(passport);  //pass passport for configuration
-
+require('./config/socketEvents')(io);
 
 // configuration ===============================================================
 mongoose.connect(configDB.mongoUrl, function(err) {
@@ -37,11 +37,17 @@ app.set('view engine', 'ejs');
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
-app.use(session({ store: new RedisStore({
+var sessionMiddleware = session({ store: new RedisStore({
   host: configDB.redisHost,
   port: configDB.redisPort,
   pass: configDB.redisPassword
-}), secret: 'ilovescotchscotchyscotchscotch' }));
+}), secret: 'ilovescotchscotchyscotchscotch' });
+
+io.use(function(socket, next) {
+  sessionMiddleware(socket.request, socket.request.res, next);
+});
+
+app.use(sessionMiddleware);
 
 app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
@@ -83,10 +89,6 @@ app.use(function(err, req, res, next) {
     message: err.message,
     error: {}
   });
-});
-
-io.on('connection', function(socket){
-  console.log('a user connected');
 });
 
 server.listen(8000, function(err) {
