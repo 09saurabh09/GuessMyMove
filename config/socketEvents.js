@@ -11,7 +11,7 @@ module.exports = function(io) {
         socket.on('newGame', function(data) {
             //console.log(socket.request.session.passport.user);
             var userId = socket.request.session.passport.user;
-            userModel.findById(userId, function(err, user) {
+            UserModel.findById(userId, function(err, user) {
                 if (err) {
                     console.log("ERROR ::: Unable to find user");
                 }

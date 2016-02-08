@@ -25,7 +25,7 @@ module.exports = function(passport) {
 
     // used to deserialize the user
     passport.deserializeUser(function(id, done) {
-        userModel.findById(id, function(err, user) {
+        UserModel.findById(id, function(err, user) {
             done(err, user);
         });
     });
@@ -49,7 +49,7 @@ module.exports = function(passport) {
 
                 // find a user whose email is the same as the forms email
                 // we are checking to see if the user trying to login already exists
-                userModel.findOne({ 'local.email' :  email }, function(err, user) {
+                UserModel.findOne({ 'local.email' :  email }, function(err, user) {
                     // if there are any errors, return the error
                     if (err)
                         return done(err);
@@ -61,7 +61,7 @@ module.exports = function(passport) {
 
                         // if there is no user with that email
                         // create the user
-                        var newUser            = new userModel();
+                        var newUser            = new UserModel();
 
                         // set the user's local credentials
                         newUser.local.email    = email;
@@ -98,7 +98,7 @@ module.exports = function(passport) {
 
             // find a user whose email is the same as the forms email
             // we are checking to see if the user trying to login already exists
-            userModel.findOne({ 'local.email' :  email }, function(err, user) {
+            UserModel.findOne({ 'local.email' :  email }, function(err, user) {
                 // if there are any errors, return the error before anything else
                 if (err)
                     return done(err);
@@ -136,7 +136,7 @@ module.exports = function(passport) {
             process.nextTick(function() {
 
                 // find the user in the database based on their facebook id
-                userModel.findOne({ 'facebook.id' : profile.id }, function(err, user) {
+                UserModel.findOne({ 'facebook.id' : profile.id }, function(err, user) {
 
                     // if there is an error, stop everything and return that
                     // ie an error connecting to the database
@@ -148,7 +148,7 @@ module.exports = function(passport) {
                         return done(null, user); // user found, return that user
                     } else {
                         // if there is no user found with that facebook id, create them
-                        var newUser            = new userModel();
+                        var newUser            = new UserModel();
                         // set all of the facebook information in our user model
                         newUser.facebook.id    = profile.id; // set the users facebook id
                         newUser.facebook.token = token; // we will save the token that facebook provides to the user

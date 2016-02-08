@@ -3,18 +3,21 @@
  */
 module.exports = {
   getGameByID: function(gameId) {
-      //gameModel.
+      //GameModel.
   },
   createGame: function(gameObject) {
-      var newGame = new gameModel();
+      var newGame = new GameModel();
       newGame.playerOne = gameObject.playerOne;
       newGame.gameId = gameObject.gameId;
       newGame.save(function(err) {
-          if (err)
-              throw err;
-
+          if (err) {
+              console.log(err.message);
+          }
           // if successful, return the new user
-          console.log('game saved');
+          else {
+              console.log('game saved');
+          }
+
       });
     }
 };
