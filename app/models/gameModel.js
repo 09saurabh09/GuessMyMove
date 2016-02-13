@@ -6,6 +6,8 @@ var gameSchema = mongoose.Schema({
     playerOne : String,
     playerTwo : String,
     gameId : { type : String, unique: true, index: true},
+    gameType: Number,
+    isTemporary : Boolean,
     state : String,
     winner : String
 }, { timestamps: true });

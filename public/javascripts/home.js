@@ -4,6 +4,8 @@
 $(function() {
     var socket = io();
     var gameIdLength = 5;
+    var auth = $("#loggedIn").html();
+    var secretKey = null;
 
     var b = jsboard.board({ attach: "game", size: "6x6" , style: "checkerboard"});
     var x = jsboard.piece({ text: "X", fontSize: "30px", textAlign: "center" });
@@ -33,9 +35,16 @@ $(function() {
 
     // Event Listners
     var gameId = Math.random().toString(36).substring(2, 2 + gameIdLength); // Have to increase it later
+    if (auth !== 'true')  {
+        secretKey = $.jStorage.get('secretKey', null);
+        if (!secretKey) {
+            secretKey = Math.random().toString(36).substring(2, 10);
+            $.jStorage.set('secretKey', secretKey)
+        }
+    }
 
     // Register this game
-    socket.emit('newGame', { id: gameId });
+    socket.emit('newGame', { id: gameId, secretKey:secretKey });
 
     $('div#gameId')[0].innerHTML = gameId;
     $('#friendGameID').on("change keyup", function(event) {
@@ -46,7 +55,6 @@ $(function() {
 
         }
 
-    })
-
+    });
 
 });

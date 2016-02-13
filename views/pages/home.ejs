@@ -19,6 +19,7 @@
         </button>
 
         <a class="navbar-brand" href="#">Tic Tac Toe</a>
+        <div style="display:none;" id="loggedIn"><%=data.isAuthenticated %></div>
         <ul class="pull-right nav navbar-right">
             <%if (data.isAuthenticated) { %>
             <li class="dropdown">
@@ -98,7 +99,9 @@
 </div>
 
 </body>
+<script src="./../public/javascripts/json2.js"></script>
 <script src="./../bower_components/jquery/dist/jquery.min.js"></script>
+<script src="./../public/javascripts/jsstorage.js"></script>
 <script src="./../bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
 <script src="./../public/javascripts/jsboard.js"></script>
 <script src="./../public/javascripts/home.js"></script>

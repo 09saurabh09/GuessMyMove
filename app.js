@@ -7,6 +7,7 @@ var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
 var passport = require('passport');
 var session      = require('express-session');
+
 var RedisStore = require('connect-redis')(session);
 
 var app = express();
@@ -27,9 +28,10 @@ mongoose.connect(configDB.mongoUrl, function(err) {
   if(err) {
     console.log('Error connecting to mongo');
   } else {
-    console.log('connected to DB');
+    console.log('connected to MongoDB');
   }
 }); // connect to our database
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

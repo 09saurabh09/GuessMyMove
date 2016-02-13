@@ -6,9 +6,7 @@ module.exports = {
       //GameModel.
   },
   createGame: function(gameObject) {
-      var newGame = new GameModel();
-      newGame.playerOne = gameObject.playerOne;
-      newGame.gameId = gameObject.gameId;
+      var newGame = new GameModel(gameObject);
       newGame.save(function(err) {
           if (err) {
               console.log(err.message);
