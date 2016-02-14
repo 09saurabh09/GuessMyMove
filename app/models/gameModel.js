@@ -3,8 +3,10 @@
  */
 var mongoose = require('mongoose');
 var gameSchema = mongoose.Schema({
-    playerOne : String,
-    playerTwo : String,
+    playerOneEmail : String,
+    playerTwoEmail : String,
+    playerOneId : String,
+    playerTwoId : String,
     gameId : { type : String, unique: true, index: true},
     gameType: Number,
     isTemporary : Boolean,

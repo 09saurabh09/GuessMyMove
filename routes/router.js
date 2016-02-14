@@ -18,21 +18,15 @@ router.post('/api/users/signin', function(req, res, next) {
 
 });
 
-//router.get('/auth/facebook', function(req, res, next) {
-//  userController.facebookLogin(req,res);
-//
-//});
-
 router.get('/auth/facebook', passport.authenticate('facebook', { scope : 'email' }));
-//
-//router.get('/auth/facebook/callback',
-//    passport.authenticate('facebook', {
-//      successRedirect : '/profile',
-//      failureRedirect : '/'
-//    }));
 
 router.get('/auth/facebook/callback', function(req, res, next) {
   userController.facebookLoginCallback(req,res);
+
+});
+
+router.post('/api/game/gameRequest', function(req, res, next) {
+  gameController.acceptRequest(req,res);
 
 });
 

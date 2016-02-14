@@ -10,6 +10,14 @@ module.exports = function(io) {
         //console.log(io.sockets.connected);
         socket.emit('news', { hello: 'world' });
 
+        socket.on('registerUser', function(data) {
+            if (socket.request.session.passport) {
+                redisController.setSessionID(socket.request.session.passport.user, socket.id);
+            } else {
+                redisController.setSessionID(data.userId, socket.id);
+            }
+        });
+
         socket.on('newGame', function(data) {
             var gameObject = {gameId : data.id};
             // Create game
@@ -22,29 +30,55 @@ module.exports = function(io) {
                         console.log("ERROR ::: Unable to find user");
                     }
                     lodash.assign(gameObject, {
-                        playerOne : user.local.email,
+                        playerOneEmail : user.local.email,
+                        playerOneId : user.id,
                         isTemporary : false
                     });
 
                     // Have to use async later
+                    // Create a mapping of unique id and session id
+                    redisController.setSessionID(gameObject.playerOneId, socket.id);
                     gameController.createGame(gameObject);
 
 
                 });
             } else {
                 lodash.assign(gameObject, {
-                    playerOne : data.secretKey,
+                    playerOneId : data.secretKey,
                     isTemporary : true
                 });
 
                 // Have to use async later
                 // Create a mapping of unique id and session id
-                redisController.setSessionID(gameObject.playerOne, socket.id);
+                redisController.setSessionID(gameObject.playerOneId, socket.id);
                 gameController.createGame(gameObject);
 
             }
 
 
+        });
+
+        socket.on('newTurn', function(data) {
+            var userId, opponent;
+            console.log(data);
+            if (socket.request.session.passport) {
+                userId = socket.request.session.passport.user;
+            } else {
+                userId = data.userId;
+            }
+
+            redisController.getKey(data.gameId, function(err, data) {
+                opponent = JSON.parse(data)[userId];
+                console.log(opponent);
+                redisController.getSocketId(opponent, function(err, socketId) {
+                    console.log("hello");
+                    console.log(socketId);
+
+                    if (io.sockets.connected[socketId]) {
+                        io.sockets.connected[socketId].emit('opponentTurn', 'for your eyes only');
+                    }
+                });
+            });
         });
 
     });
