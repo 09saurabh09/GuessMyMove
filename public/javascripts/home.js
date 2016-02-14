@@ -9,14 +9,19 @@ $(function() {
     var gameId = Math.random().toString(36).substring(2, 2 + gameIdLength); // Have to increase it later
     var playingGameId = gameId;
     var gameStarted = false;
+    var playerOne = true;
+    var beginning = true;
+    var myPiece, opponentPiece;
 
     var socket = io(Server);
 
     var board = jsboard.board({ attach: "game", size: "6x6" , style: "checkerboard"});
     var x = jsboard.piece({ text: "X", fontSize: "30px", textAlign: "center" });
     var o = jsboard.piece({ text: "O", fontSize: "30px", textAlign: "center"});
+    var guessPiece = jsboard.piece({ text: "?", fontSize: "20px", textAlign: "center"});
 
     var turn = true;
+    var guess = true;
     board.style({ borderSpacing: "0px" });
     board.cell("each").style({
         width: "50px",
@@ -27,18 +32,32 @@ $(function() {
 
 
     board.cell("each").on("click", function() {
-        console.log(board.cell(this));
-        console.log(board.cell(this).where());
-        console.log(board.cell(1,2));
-        board.cell([4,2]).place(o.clone());
+        //console.log(board.cell(this));
+        //console.log(board.cell(this).where());
+        //console.log(board.cell(1,2));
+        //board.cell([4,2]).place(o.clone());
         if (board.cell(this).get()===null) {
-            if (turn) { board.cell(this).place(x.clone()); }
-            else      { board.cell(this).place(o.clone()); }
-            turn = !turn;
-
             if (gameStarted) {
                 // Emit a event for this turn
-                socket.emit('newTurn', {gameId: playingGameId, location: board.cell(this).where(), userId: secretKey});
+                if (beginning && playerOne) {
+                    turn = !turn;
+                }
+                myPiece = playerOne ? x : o;
+                opponentPiece = !playerOne ? x : o;
+                if ((beginning && playerOne) || (!beginning)) {
+                    if (turn) {
+                        board.cell(this).place(myPiece.clone());
+                        turn = !turn;
+                        socket.emit('newTurn', {gameId: playingGameId, location: board.cell(this).where(), userId: secretKey});
+                    } else if (guess) {
+                        board.cell(this).place(guessPiece.clone());
+                        guess = !guess;
+                        socket.emit('turnTransfer', {gameId: playingGameId, userId: secretKey});
+                    }
+                    beginning = false;
+                }
+
+
             }
         }
     });
@@ -61,11 +80,25 @@ $(function() {
         console.log('disconnected')
     });
 
+
     // Register this game
     socket.emit('newGame', { id: gameId, secretKey:secretKey });
 
+    socket.on('gameJoined', function () {
+        board.cell("each").rid();
+        gameStarted = true;
+    });
+
     socket.on('opponentTurn', function(data) {
         console.log(data);
+        board.cell(data).place(opponentPiece.clone());
+
+    });
+
+    socket.on('takeTurn', function() {
+        turn = true;
+        guess = true;
+        console.log("myTurn");
     });
 
     $('div#gameId')[0].innerHTML = gameId;
@@ -80,11 +113,15 @@ $(function() {
                 url: Server+'/api/game/gameRequest',
                 data: data,
                 success: function(response) {
-                    console.log(response);
                     $('#friendGameID').prop('disabled', false);
                     board.cell("each").rid();
                     playingGameId = newGameId;
                     gameStarted = true;
+                    playerOne = false;
+                    beginning = false
+
+                    // Inform other player about success
+                    socket.emit('newGameJoined', { gameId: newGameId, userId: secretKey});
                 },
                 error : function () {
                     $('#friendGameID').prop('disabled', false);

@@ -67,21 +67,55 @@ module.exports = function(io) {
                 userId = data.userId;
             }
 
-            redisController.getKey(data.gameId, function(err, data) {
-                opponent = JSON.parse(data)[userId];
-                console.log(opponent);
+            redisController.getKey(data.gameId, function(err, game) {
+                opponent = JSON.parse(game)[userId];
                 redisController.getSocketId(opponent, function(err, socketId) {
-                    console.log("hello");
-                    console.log(socketId);
-
                     if (io.sockets.connected[socketId]) {
-                        io.sockets.connected[socketId].emit('opponentTurn', 'for your eyes only');
+                        console.log(data);
+                        io.sockets.connected[socketId].emit('opponentTurn', data.location);
                     }
                 });
             });
         });
 
+        socket.on('newGameJoined', function(data) {
+            var userId, opponent;
+            console.log(data);
+            if (socket.request.session.passport) {
+                userId = socket.request.session.passport.user;
+            } else {
+                userId = data.userId;
+            }
+            redisController.getKey(data.gameId, function(err, game) {
+                opponent = JSON.parse(game)[userId];
+                redisController.getSocketId(opponent, function(err, socketId) {
+                    if (io.sockets.connected[socketId]) {
+                        io.sockets.connected[socketId].emit('gameJoined');
+                    }
+                });
+            });
+        });
+
+        socket.on('turnTransfer', function(data) {
+            var userId, opponent;
+            console.log(data);
+            if (socket.request.session.passport) {
+                userId = socket.request.session.passport.user;
+            } else {
+                userId = data.userId;
+            }
+            redisController.getKey(data.gameId, function(err, game) {
+                opponent = JSON.parse(game)[userId];
+                redisController.getSocketId(opponent, function(err, socketId) {
+                    if (io.sockets.connected[socketId]) {
+                        io.sockets.connected[socketId].emit('takeTurn');
+                    }
+                });
+            });
+        })
+
     });
 
 
 };
+
