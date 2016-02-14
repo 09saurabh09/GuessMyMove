@@ -11,7 +11,7 @@ $(function() {
     var gameStarted = false;
     var playerOne = true;
     var beginning = true;
-    var myPiece, opponentPiece;
+    var myPiece, opponentPiece, opponentGuess;
 
     var socket = io(Server);
 
@@ -36,6 +36,7 @@ $(function() {
         //console.log(board.cell(this).where());
         //console.log(board.cell(1,2));
         //board.cell([4,2]).place(o.clone());
+        var points;
         if (board.cell(this).get()===null) {
             if (gameStarted) {
                 // Emit a event for this turn
@@ -46,13 +47,18 @@ $(function() {
                 opponentPiece = !playerOne ? x : o;
                 if ((beginning && playerOne) || (!beginning)) {
                     if (turn) {
+                        board.cell("each").rid();
                         board.cell(this).place(myPiece.clone());
+                        board.cell(opponentGuess).place(guessPiece.clone());
+                        points = computePoints(board.cell(this).where(), opponentGuess);
+                        toastr.info(points+ " points to you");
                         turn = !turn;
                         socket.emit('newTurn', {gameId: playingGameId, location: board.cell(this).where(), userId: secretKey});
                     } else if (guess) {
+                        board.cell("each").rid();
                         board.cell(this).place(guessPiece.clone());
                         guess = !guess;
-                        socket.emit('turnTransfer', {gameId: playingGameId, userId: secretKey});
+                        socket.emit('turnTransfer', {gameId: playingGameId, location: board.cell(this).where(), userId: secretKey});
                     }
                     beginning = false;
                 }
@@ -89,15 +95,18 @@ $(function() {
         gameStarted = true;
     });
 
-    socket.on('opponentTurn', function(data) {
-        console.log(data);
-        board.cell(data).place(opponentPiece.clone());
+    socket.on('opponentTurn', function(location) {
+        console.log(location);
+        board.cell(location).place(opponentPiece.clone());
 
     });
 
-    socket.on('takeTurn', function() {
+    socket.on('takeTurn', function(oppGuess) {
         turn = true;
         guess = true;
+        beginning = false;
+        opponentGuess = oppGuess;
+
         console.log("myTurn");
     });
 
@@ -118,7 +127,6 @@ $(function() {
                     playingGameId = newGameId;
                     gameStarted = true;
                     playerOne = false;
-                    beginning = false
 
                     // Inform other player about success
                     socket.emit('newGameJoined', { gameId: newGameId, userId: secretKey});
@@ -134,4 +142,8 @@ $(function() {
 
     });
 
+    function computePoints(a,b) {
+        var point = Math.pow((a[0] - b[0]), 2) + Math.pow((a[1] - b[1]), 2);
+        return point;
+    }
 });

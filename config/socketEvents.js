@@ -108,7 +108,7 @@ module.exports = function(io) {
                 opponent = JSON.parse(game)[userId];
                 redisController.getSocketId(opponent, function(err, socketId) {
                     if (io.sockets.connected[socketId]) {
-                        io.sockets.connected[socketId].emit('takeTurn');
+                        io.sockets.connected[socketId].emit('takeTurn', data.location);
                     }
                 });
             });

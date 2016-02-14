@@ -24,6 +24,7 @@
   ],
   "dependencies": {
     "bootstrap": "~3.3.6",
-    "jquery": "~2.2.0"
+    "jquery": "~2.2.0",
+    "toastr": "~2.1.2"
   }
 }
