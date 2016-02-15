@@ -5,7 +5,6 @@
     <title>TicTacToe</title>
     <link rel="stylesheet" type="text/css" href="./../bower_components/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="./../bower_components/toastr/toastr.min.css">
-
 </head>
 <body>
 <nav class="navbar navbar-default" role="navigation">
@@ -50,9 +49,14 @@
 </nav>
 
 <div class="container-fluid">
-    <label for="email">Your GameId:</label>
+    <label for="gameId">GameId:</label>
     <!--<button id="gameInvite" type="button" class="btn btn-default"></button>-->
     <div id="gameId" style="display: inline"></div>
+    <div id="scoreDiv" style="display: none">
+        <label for="score">Score:</label>
+        <div id="score" style="display: inline"> 0</div>
+    </div>
+
     <form class="form-inline">
         <div class="form-group">
             <input id="friendGameID" type="text" class="form-control" id="email" placeholder="Enter your friend's game id to join">

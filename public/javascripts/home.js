@@ -12,6 +12,7 @@ $(function() {
     var playerOne = true;
     var beginning = true;
     var myPiece, opponentPiece, opponentGuess;
+    var score = 0;
 
     var socket = io(Server);
 
@@ -19,6 +20,8 @@ $(function() {
     var x = jsboard.piece({ text: "X", fontSize: "30px", textAlign: "center" });
     var o = jsboard.piece({ text: "O", fontSize: "30px", textAlign: "center"});
     var guessPiece = jsboard.piece({ text: "?", fontSize: "20px", textAlign: "center"});
+    var mixPiecePlayerOne = jsboard.piece({ text: "?O", fontSize: "20px", textAlign: "center"});
+    var mixPiecePlayerTwe = jsboard.piece({ text: "?X", fontSize: "20px", textAlign: "center"});
 
     var turn = true;
     var guess = true;
@@ -29,6 +32,8 @@ $(function() {
         margin: '5px',
         borderRadius: "2px"
     });
+
+    setPosition();
 
 
     board.cell("each").on("click", function() {
@@ -51,13 +56,16 @@ $(function() {
                         board.cell(this).place(myPiece.clone());
                         board.cell(opponentGuess).place(guessPiece.clone());
                         points = computePoints(board.cell(this).where(), opponentGuess);
-                        toastr.info(points+ " points to you");
+                        toastr.info(points+ " points to you, now make your guess");
+                        score = score + points;
+                        $('div#score')[0].innerHTML = score;
                         turn = !turn;
                         socket.emit('newTurn', {gameId: playingGameId, location: board.cell(this).where(), userId: secretKey});
                     } else if (guess) {
                         board.cell("each").rid();
                         board.cell(this).place(guessPiece.clone());
                         guess = !guess;
+                        toastr.info("Great!!!, now wait for opponent move and guess");
                         socket.emit('turnTransfer', {gameId: playingGameId, location: board.cell(this).where(), userId: secretKey});
                     }
                     beginning = false;
@@ -93,6 +101,9 @@ $(function() {
     socket.on('gameJoined', function () {
         board.cell("each").rid();
         gameStarted = true;
+        if (playerOne) {
+            toastr.info("Your turn, make your guess");
+        }
     });
 
     socket.on('opponentTurn', function(location) {
@@ -106,7 +117,7 @@ $(function() {
         guess = true;
         beginning = false;
         opponentGuess = oppGuess;
-
+        toastr.info("Your turn, make your move away from opponent guess");
         console.log("myTurn");
     });
 
@@ -130,6 +141,7 @@ $(function() {
 
                     // Inform other player about success
                     socket.emit('newGameJoined', { gameId: newGameId, userId: secretKey});
+                    toastr.info("Opponent turn, wait for guess");
                 },
                 error : function () {
                     $('#friendGameID').prop('disabled', false);
@@ -143,7 +155,15 @@ $(function() {
     });
 
     function computePoints(a,b) {
-        var point = Math.pow((a[0] - b[0]), 2) + Math.pow((a[1] - b[1]), 2);
-        return point;
+        return Math.abs(a[0] - b[0]) + Math.abs(a[1] - b[1]);
+    }
+
+    function setPosition() {
+        var gameDiv = $('#game');
+        var scoreDiv = $('#scoreDiv');
+        var scoreLeft = gameDiv.offset().left + gameDiv.width() - 80;
+        $('#friendGameID').width(gameDiv.width());
+        scoreDiv.css({position: "absolute",left : scoreLeft, display: "inline"});
+        //scoreDiv.css('display','inline');
     }
 });
