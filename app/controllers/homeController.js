@@ -1,5 +1,5 @@
 module.exports = {
-    home : function (req, res, next) {
+    home: function (req, res, next) {
         var homeObject = {};
         homeObject.isAuthenticated = req.isAuthenticated();
         if (req.isAuthenticated()) {
