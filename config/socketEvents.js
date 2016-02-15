@@ -1,14 +1,18 @@
 /**
  * Created by saurabhk on 07/02/16.
  */
-var lodash = require("lodash");
+/*globals gameController,redisController, UserModel*/
+
+var lodash = require('lodash');
 
 module.exports = function(io) {
-    io.on('connection', function(socket){
+    io.on('connection', function(socket) {
         console.log('a user connected');
-        //console.log(socket.request.session );
-        //console.log(io.sockets.connected);
-        socket.emit('news', { hello: 'world' });
+        // console.log(socket.request.session );
+        // console.log(io.sockets.connected);
+        socket.emit('news', {
+            hello: 'world'
+        });
 
         socket.on('registerUser', function(data) {
             if (socket.request.session.passport) {
@@ -19,43 +23,40 @@ module.exports = function(io) {
         });
 
         socket.on('newGame', function(data) {
-            var gameObject = {gameId : data.id};
+            var gameObject = {
+                gameId: data.id
+            };
             // Create game
             if (socket.request.session.passport) {
                 var userId = socket.request.session.passport.user;
 
-                console.log("creating game");
+                console.log('creating game');
                 UserModel.findById(userId, function(err, user) {
                     if (err) {
-                        console.log("ERROR ::: Unable to find user");
+                        console.log('ERROR ::: Unable to find user');
                     }
                     lodash.assign(gameObject, {
-                        playerOneEmail : user.local.email,
-                        playerOneId : user.id,
-                        isTemporary : false
+                        playerOneEmail: user.local.email,
+                        playerOneId: user.id,
+                        isTemporary: false
                     });
 
                     // Have to use async later
                     // Create a mapping of unique id and session id
                     redisController.setSessionID(gameObject.playerOneId, socket.id);
                     gameController.createGame(gameObject);
-
-
                 });
             } else {
                 lodash.assign(gameObject, {
-                    playerOneId : data.secretKey,
-                    isTemporary : true
+                    playerOneId: data.secretKey,
+                    isTemporary: true
                 });
 
                 // Have to use async later
                 // Create a mapping of unique id and session id
                 redisController.setSessionID(gameObject.playerOneId, socket.id);
                 gameController.createGame(gameObject);
-
             }
-
-
         });
 
         socket.on('newTurn', function(data) {
@@ -112,10 +113,6 @@ module.exports = function(io) {
                     }
                 });
             });
-        })
-
+        });
     });
-
-
 };
-

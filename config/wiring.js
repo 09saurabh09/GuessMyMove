@@ -1,6 +1,6 @@
-//We will do here controller and model wiring so that we cast
+// We will do here controller and model wiring so that we cast
 //
-//access them in any file without requiring them
+// access them in any file without requiring them
 var fs = require('fs');
 
 var controllersPath = './app/controllers/';
@@ -18,5 +18,3 @@ fs.readdirSync(controllersPath).forEach(function(name) {
 fs.readdirSync(modelsPath).forEach(function(name) {
     global[name.split('.')[0]] = require(modelsPathForRequire + name);
 });
-
-
