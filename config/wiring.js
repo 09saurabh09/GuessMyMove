@@ -16,5 +16,5 @@ fs.readdirSync(controllersPath).forEach(function(name) {
 });
 
 fs.readdirSync(modelsPath).forEach(function(name) {
-    global[name.split('.')[0]] = require(modelsPathForRequire + name);
+    global[name.slice(0, 1).toUpperCase() + name.split('.')[0].slice(1)] = require(modelsPathForRequire + name);
 });
