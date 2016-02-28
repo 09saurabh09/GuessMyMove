@@ -2,19 +2,22 @@
  * Created by saurabhk on 26/01/16.
  */
 $(function() {
+    // Help content for players
+    $('#helpModel').modal('show')
     var gameIdLength = 5;
     var auth = $("#loggedIn").html();
     var secretKey = null;
-    var Server = 'http://localhost:8000';
     var gameId = Math.random().toString(36).substring(2, 2 + gameIdLength); // Have to increase it later
     var playingGameId = gameId;
     var gameStarted = false;
     var playerOne = true;
     var beginning = true;
-    var myPiece, opponentPiece, opponentGuess;
+    var myPiece, opponentPiece, myGuess, opponentGuess;
     var score = 0;
-
-    var socket = io(Server);
+    var opponentScore = 0;
+    var nTurnInGame = 5;
+    var turnCount = 0;
+    var socket = io();
 
     var board = jsboard.board({ attach: "game", size: "6x6" , style: "checkerboard"});
     var x = jsboard.piece({ text: "X", fontSize: "30px", textAlign: "center" });
@@ -37,10 +40,6 @@ $(function() {
 
 
     board.cell("each").on("click", function() {
-        //console.log(board.cell(this));
-        //console.log(board.cell(this).where());
-        //console.log(board.cell(1,2));
-        //board.cell([4,2]).place(o.clone());
         var points;
         if (board.cell(this).get()===null) {
             if (gameStarted) {
@@ -50,23 +49,34 @@ $(function() {
                 }
                 myPiece = playerOne ? x : o;
                 opponentPiece = !playerOne ? x : o;
+
+                myGuess = board.cell(this).where();
                 if ((beginning && playerOne) || (!beginning)) {
                     if (turn) {
                         board.cell("each").rid();
                         board.cell(this).place(myPiece.clone());
                         board.cell(opponentGuess).place(guessPiece.clone());
-                        points = computePoints(board.cell(this).where(), opponentGuess);
+                        points = computePoints(myGuess, opponentGuess);
                         toastr.info(points+ " points to you, now make your guess");
                         score = score + points;
-                        $('div#score')[0].innerHTML = score;
+                        $('div#myScore')[0].innerHTML = score;
                         turn = !turn;
-                        socket.emit('newTurn', {gameId: playingGameId, location: board.cell(this).where(), userId: secretKey});
+
+                        // Player one will decide when to finish the game, will send an event when game will finish
+                        turnCount = turnCount + 1;
+                        if (playerOne && (turnCount === nTurnInGame)) {
+                            declareWinner();
+                            socket.emit('newTurn', {gameId: playingGameId, location: myGuess, userId: secretKey, gameOver: true});
+                        } else {
+                            socket.emit('newTurn', {gameId: playingGameId, location: myGuess, userId: secretKey});
+                        }
+
                     } else if (guess) {
                         board.cell("each").rid();
                         board.cell(this).place(guessPiece.clone());
                         guess = !guess;
                         toastr.info("Great!!!, now wait for opponent move and guess");
-                        socket.emit('turnTransfer', {gameId: playingGameId, location: board.cell(this).where(), userId: secretKey});
+                        socket.emit('turnTransfer', {gameId: playingGameId, location: myGuess, userId: secretKey});
                     }
                     beginning = false;
                 }
@@ -106,9 +116,18 @@ $(function() {
         }
     });
 
-    socket.on('opponentTurn', function(location) {
-        console.log(location);
-        board.cell(location).place(opponentPiece.clone());
+    socket.on('opponentTurn', function(opponentTurn) {
+        board.cell(opponentTurn.location).place(opponentPiece.clone());
+
+        //Update opponent's score
+        var points = computePoints(myGuess, opponentTurn.location);
+        toastr.info(points+ " points to your opponent");
+        opponentScore = opponentScore + points;
+        $('div#opponentScore')[0].innerHTML = opponentScore;
+
+        if (opponentTurn.gameOver) {
+            declareWinner();
+        }
 
     });
 
@@ -130,7 +149,7 @@ $(function() {
             data = { ownGameId: gameId, requestGameId:newGameId, userId: secretKey };
             $.ajax({
                 type: "POST",
-                url: Server+'/api/game/gameRequest',
+                url: '/api/game/gameRequest',
                 data: data,
                 success: function(response) {
                     $('#friendGameID').prop('disabled', false);
@@ -165,5 +184,20 @@ $(function() {
         $('#friendGameID').width(gameDiv.width());
         scoreDiv.css({position: "absolute",left : scoreLeft, display: "inline"});
         //scoreDiv.css('display','inline');
+    }
+
+    function declareWinner() {
+        if(score > opponentScore) {
+            toastr.success('Congratulations!!! You have won the match');
+        } else if (score < opponentScore) {
+            toastr.error('You Lost!!! Better luck next time');
+        } else {
+            toastr.info('Its a tie, Play one more game to decide who is champion');
+        }
+        board.cell("each").rid();
+        $('div#myScore')[0].innerHTML = 0;
+        $('div#opponentScore')[0].innerHTML = 0;
+        score = 0;
+        opponentScore = 0
     }
 });

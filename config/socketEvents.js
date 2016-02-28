@@ -67,13 +67,16 @@ module.exports = function(io) {
             } else {
                 userId = data.userId;
             }
-
+            var dataToSend = {
+                location: data.location,
+                gameOver: data.gameOver
+            };
             redisController.getKey(data.gameId, function(err, game) {
                 opponent = JSON.parse(game)[userId];
                 redisController.getSocketId(opponent, function(err, socketId) {
                     if (io.sockets.connected[socketId]) {
                         console.log(data);
-                        io.sockets.connected[socketId].emit('opponentTurn', data.location);
+                        io.sockets.connected[socketId].emit('opponentTurn', dataToSend);
                     }
                 });
             });

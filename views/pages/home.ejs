@@ -18,7 +18,7 @@
             <span class="icon-bar"></span>
         </button>
 
-        <a class="navbar-brand" href="#">Tic Tac Toe</a>
+        <a class="navbar-brand" href="#">Guess My Move</a>
         <div style="display:none;" id="loggedIn"><%=data.isAuthenticated %></div>
         <ul class="pull-right nav navbar-right">
             <%if (data.isAuthenticated) { %>
@@ -53,8 +53,9 @@
     <!--<button id="gameInvite" type="button" class="btn btn-default"></button>-->
     <div id="gameId" style="display: inline"></div>
     <div id="scoreDiv" style="display: none">
-        <label for="score">Score:</label>
-        <div id="score" style="display: inline"> 0</div>
+        <label for="score">Scores:</label>
+        <div id="myScore" style="display: inline; color:green"> 0</div>
+        <div id="opponentScore" style="display: inline; color:red"> 0</div>
     </div>
 
     <form class="form-inline">
@@ -97,6 +98,28 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary">Login/SignUp</button>
                 <a href="/auth/facebook" class="btn btn-primary"><span class="fa fa-facebook"></span>Facebook</a>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="helpModel" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel">Rules of game</h4>
+            </div>
+            <div class="modal-body">
+                <ul class="list-group">
+                    <li class="list-group-item">Person who will invite will be player one</li>
+                    <li class="list-group-item">Player one will first guess player two move</li>
+                    <li class="list-group-item">Player two will make his move and then guess player one move</li>
+                    <li class="list-group-item">This will continue till fixed number of chances</li>
+                    <li class="list-group-item">Larger the distance between guess and move, more the score for that move</li>
+                </ul>
+            </div>
+            <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             </div>
         </div>
