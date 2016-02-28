@@ -99,7 +99,7 @@ app.use(function(err, req, res, next) {
     });
 });
 
-server.listen(8000, function(err) {
+server.listen(process.env.PORT || 8000, function(err) {
     if (err) {
         console.log('Error in starting server');
     } else {
