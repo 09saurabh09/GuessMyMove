@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta name="viewport"  content="width=device-width, initial-scale=1">
-    <title>TicTacToe</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Guess My Move</title>
     <link rel="stylesheet" type="text/css" href="./../bower_components/bootstrap/dist/css/bootstrap.min.css">
-
+    <link rel="stylesheet" type="text/css" href="./../bower_components/toastr/toastr.min.css">
 </head>
 <body>
 <nav class="navbar navbar-default" role="navigation">
@@ -18,7 +18,8 @@
             <span class="icon-bar"></span>
         </button>
 
-        <a class="navbar-brand" href="#">Tic Tac Toe</a>
+        <a class="navbar-brand" href="#">Guess My Move</a>
+        <div style="display:none;" id="loggedIn"><%=data.isAuthenticated %></div>
         <ul class="pull-right nav navbar-right">
             <%if (data.isAuthenticated) { %>
             <li class="dropdown">
@@ -48,11 +49,27 @@
 </nav>
 
 <div class="container-fluid">
-    <div class="table-responsive col-lg-4 col-xs-12 col-sm-12">
-        <table id = 'game'>
+    <label for="gameId">GameId:</label>
+    <!--<button id="gameInvite" type="button" class="btn btn-default"></button>-->
+    <div id="gameId" style="display: inline"></div>
+    <div id="scoreDiv" style="display: none">
+        <label for="score">Scores:</label>
+        <div id="myScore" style="display: inline; color:green"> 0</div>
+        <div id="opponentScore" style="display: inline; color:red"> 0</div>
+    </div>
 
+    <form class="form-inline">
+        <div class="form-group">
+            <input id="friendGameID" type="text" class="form-control" id="email" placeholder="Enter your friend's game id to join">
+        </div>
+    </form>
+    </br>
+
+    <div class="col-lg-4 col-xs-12 col-sm-12">
+        <table id = 'game'>
         </table>
     </div>
+    <!--<button id="gameInvite" ype="button" class="btn btn-primary">Invite a friend</button>-->
     <!--<table id='game'></table>-->
 </div>
 
@@ -87,9 +104,34 @@
     </div>
 </div>
 
+<div class="modal fade" id="helpModel" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel">Rules of game</h4>
+            </div>
+            <div class="modal-body">
+                <ul class="list-group">
+                    <li class="list-group-item">Person who will invite will be player one</li>
+                    <li class="list-group-item">Player one will first guess player two move</li>
+                    <li class="list-group-item">Player two will make his move and then guess player one move</li>
+                    <li class="list-group-item">This will continue till fixed number of chances</li>
+                    <li class="list-group-item">Larger the distance between guess and move, more the score for that move</li>
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 </body>
+<script src="./../public/javascripts/json2.js"></script>
 <script src="./../bower_components/jquery/dist/jquery.min.js"></script>
+<script src="./../public/javascripts/jsstorage.js"></script>
 <script src="./../bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="./../bower_components/toastr/toastr.min.js"></script>
 <script src="./../public/javascripts/jsboard.js"></script>
 <script src="./../public/javascripts/home.js"></script>
 <script src="https://cdn.socket.io/socket.io-1.4.4.js"></script>
