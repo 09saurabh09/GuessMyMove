@@ -65,5 +65,33 @@ module.exports = {
                 redisController.setKey(gameId, JSON.stringify(playerMapping));
             }
         });
+    },
+
+    updateWinner : function(req, res) {
+        var gameId = req.body.gameId;
+        this.getGameByID(gameId, function(err, game) {
+            if (err) {
+                res.send('Game does not exist');
+            } else if (game.playerOneEmail && game.playerTwoEmail){
+                // Make sure both players are logged in
+                if (req.body.tie === 'true') {
+                    game.winner = 'tie';
+                } else {
+                    game.winner = req.body.playerOneWinner === 'true' ? game.playerOneEmail : game.playerTwoEmail;
+                }
+                game.save(function(err) {
+                    if (err) {
+                        console.log('can not update game');
+                        res.send('Try Again');
+                    } else {
+                        console.log('Winner updated');
+                        res.send('Winner Updated');
+                    }
+                });
+
+            } else {
+                res.send('Temporary game')
+            }
+        });
     }
 };

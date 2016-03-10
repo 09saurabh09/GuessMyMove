@@ -51,9 +51,7 @@ $(function() {
         //Disable it and update setting if logged in
         if (auth === 'true') {
             //Post call to update settings
-            console.log('auth');
         } else {
-            console.log('hello');
             $.jStorage.set('helpEnabled', false);
         }
     });
@@ -85,6 +83,7 @@ $(function() {
                         turnCount = turnCount + 1;
                         if (playerOne && (turnCount === nTurnInGame)) {
                             declareWinner();
+                            updateWinner();
                             socket.emit('newTurn', {gameId: playingGameId, location: myGuess, userId: secretKey, gameOver: true});
                         } else {
                             socket.emit('newTurn', {gameId: playingGameId, location: myGuess, userId: secretKey});
@@ -227,5 +226,23 @@ $(function() {
         //score = 0;
         //opponentScore = 0
         window.location="/"
+    }
+
+    function updateWinner() {
+        var data = {};
+        data.gameId = gameId;
+        data.playerOneWinner = (score > opponentScore);
+        data.tie = (score === opponentScore);
+        $.ajax({
+            type: "POST",
+            url: '/api/game/updateWinner',
+            data: data,
+            success: function(response) {
+                console.log(response)
+            },
+            error : function () {
+                console.log('winner not updated')
+            }
+        });
     }
 });
