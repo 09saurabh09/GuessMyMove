@@ -28,4 +28,8 @@ router.post('/api/game/gameRequest', function(req, res, next) {
     gameController.acceptRequest(req, res);
 });
 
+router.post('/api/game/updateWinner', function(req, res, next) {
+    gameController.updateWinner(req, res);
+});
+
 module.exports = router;

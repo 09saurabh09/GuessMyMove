@@ -34,12 +34,17 @@ module.exports = function(io) {
                 UserModel.findById(userId, function(err, user) {
                     if (err) {
                         console.log('ERROR ::: Unable to find user');
+                    } else if (user) {
+                        lodash.assign(gameObject, {
+                            playerOneEmail: user.local.email,
+                            playerOneId: user.id,
+                            isTemporary: false
+                        });
+                    } else {
+                        lodash.assign(gameObject, {
+                            playerOneId: user.id
+                        });
                     }
-                    lodash.assign(gameObject, {
-                        playerOneEmail: user.local.email,
-                        playerOneId: user.id,
-                        isTemporary: false
-                    });
 
                     // Have to use async later
                     // Create a mapping of unique id and session id

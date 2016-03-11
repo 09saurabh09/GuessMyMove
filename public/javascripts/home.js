@@ -3,7 +3,11 @@
  */
 $(function() {
     // Help content for players
-    $('#helpModel').modal('show')
+    var helpEnabled = $.jStorage.get('helpEnabled', true);
+    if (helpEnabled) {
+        $('#helpModel').modal('show');
+    }
+
     var gameIdLength = 5;
     var auth = $("#loggedIn").html();
     var secretKey = null;
@@ -38,6 +42,19 @@ $(function() {
 
     setPosition();
 
+    $('#winnerModel').on('hidden.bs.modal', function (e) {
+       //Start new game
+        startNewGame();
+    });
+
+    $('#disableHelp').on('click', function () {
+        //Disable it and update setting if logged in
+        if (auth === 'true') {
+            //Post call to update settings
+        } else {
+            $.jStorage.set('helpEnabled', false);
+        }
+    });
 
     board.cell("each").on("click", function() {
         var points;
@@ -66,6 +83,7 @@ $(function() {
                         turnCount = turnCount + 1;
                         if (playerOne && (turnCount === nTurnInGame)) {
                             declareWinner();
+                            updateWinner();
                             socket.emit('newTurn', {gameId: playingGameId, location: myGuess, userId: secretKey, gameOver: true});
                         } else {
                             socket.emit('newTurn', {gameId: playingGameId, location: myGuess, userId: secretKey});
@@ -136,8 +154,7 @@ $(function() {
         guess = true;
         beginning = false;
         opponentGuess = oppGuess;
-        toastr.info("Your turn, make your move away from opponent guess");
-        console.log("myTurn");
+        toastr.info("Your turn, make your move close to opponent guess");
     });
 
     $('div#gameId')[0].innerHTML = gameId;
@@ -174,7 +191,7 @@ $(function() {
     });
 
     function computePoints(a,b) {
-        return Math.abs(a[0] - b[0]) + Math.abs(a[1] - b[1]);
+        return 10 -  (Math.abs(a[0] - b[0]) + Math.abs(a[1] - b[1]));
     }
 
     function setPosition() {
@@ -188,16 +205,44 @@ $(function() {
 
     function declareWinner() {
         if(score > opponentScore) {
-            toastr.success('Congratulations!!! You have won the match');
+            $('div#winnerMessage')[0].innerHTML = 'Congratulations!!! You have won the match';
         } else if (score < opponentScore) {
-            toastr.error('You Lost!!! Better luck next time');
+            $('div#winnerMessage')[0].innerHTML = 'You Lost!!! Better luck next time';
         } else {
-            toastr.info('Its a tie, Play one more game to decide who is champion');
+            $('div#winnerMessage')[0].innerHTML = 'Its a tie, Play one more game to decide who is champion';
         }
-        board.cell("each").rid();
-        $('div#myScore')[0].innerHTML = 0;
-        $('div#opponentScore')[0].innerHTML = 0;
-        score = 0;
-        opponentScore = 0
+        $('div#myScoreDialog')[0].innerHTML = score;
+        $('div#opponentScoreDialog')[0].innerHTML = opponentScore;
+        $('#winnerModel').modal('show');
+
+        //New game will be created after this
+
+    }
+
+    function startNewGame() {
+        //board.cell("each").rid();
+        //$('div#myScore')[0].innerHTML = 0;
+        //$('div#opponentScore')[0].innerHTML = 0;
+        //score = 0;
+        //opponentScore = 0
+        window.location="/"
+    }
+
+    function updateWinner() {
+        var data = {};
+        data.gameId = gameId;
+        data.playerOneWinner = (score > opponentScore);
+        data.tie = (score === opponentScore);
+        $.ajax({
+            type: "POST",
+            url: '/api/game/updateWinner',
+            data: data,
+            success: function(response) {
+                console.log(response)
+            },
+            error : function () {
+                console.log('winner not updated')
+            }
+        });
     }
 });
