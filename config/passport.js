@@ -119,9 +119,9 @@ module.exports = function (passport) {
 // =========================================================================
     passport.use('facebook', new FacebookStrategy({
         // pull in our app id and secret from our auth.js file
-        clientID: credentialObj.passport.facebookAuth.clientID,
-        clientSecret: credentialObj.passport.facebookAuth.clientSecret,
-        callbackURL: credentialObj.passport.facebookAuth.callbackURL,
+        clientID: process.env.PASSPORT_FB_CLIENT_ID,
+        clientSecret: process.env.PASSPORT_FB_CLIENT_SECRET,
+        callbackURL: process.env.PASSPORT_FB_CALLBACK,
         profileFields: ['id', 'email', 'gender', 'link', 'locale', 'name', 'timezone', 'updated_time', 'verified']
 
     },

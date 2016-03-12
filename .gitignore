@@ -3,3 +3,5 @@ bower_components
 .idea
 .DS_Store
 config/credentials.json
+dumb.rdb
+.env

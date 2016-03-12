@@ -7,6 +7,7 @@ var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
 var passport = require('passport');
 var session = require('express-session');
+require('dotenv').config();
 
 var RedisStore = require('connect-redis')(session);
 
@@ -17,7 +18,6 @@ var io = require('socket.io')(server);
 var routes = require('./routes/router');
 var configDB = require('./config/database.js');
 
-
 require('./config/wiring.js'); // For making models and controllers globally accessible
 
 require('./config/passport')(passport); // pass passport for configuration
@@ -26,12 +26,11 @@ require('./config/socketEvents')(io);
 // configuration ===============================================================
 mongoose.connect(configDB.mongoUrl, function(err) {
     if (err) {
-        console.log('Error connecting to mongo');
+        console.log('Error connecting to mongo '+err.message);
     } else {
         console.log('connected to MongoDB');
     }
 }); // connect to our database
-
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
