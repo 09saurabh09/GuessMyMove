@@ -138,27 +138,32 @@ module.exports = function (passport) {
                 if (user) {
                     return done(null, user); // user found, return that user
                 } else {
-                    // if there is no user found with that facebook id, create them
-                    var newUser = new UserModel();
-                    // set all of the facebook information in our user model
-                    newUser.facebook.id = profile.id; // set the users facebook id
-                    newUser.facebook.token = token; // we will save the token that facebook provides to the user
-                    newUser.facebook.name = profile.name.givenName + ' ' + profile.name.familyName; // look at the passport user profile to see how names are returned
-                    newUser.facebook.email = profile.emails[0].value; // facebook can return multiple emails so we'll take the first
+                    try {
+                        // if there is no user found with that facebook id, create them
+                        var newUser = new UserModel();
+                        // set all of the facebook information in our user model
+                        newUser.facebook.id = profile.id; // set the users facebook id
+                        newUser.facebook.token = token; // we will save the token that facebook provides to the user
+                        newUser.facebook.name = profile.name.givenName + ' ' + profile.name.familyName; // look at the passport user profile to see how names are returned
+                        newUser.facebook.email = profile.emails[0].value; // facebook can return multiple emails so we'll take the first
 
-                    // Update local profile also, if not updated
-                    newUser.local.email = profile.emails[0].value;
-                    newUser.local.firstName = profile.name.givenName;
-                    newUser.local.lastName = profile.name.familyName;
+                        // Update local profile also, if not updated
+                        newUser.local.email = profile.emails[0].value;
+                        newUser.local.firstName = profile.name.givenName;
+                        newUser.local.lastName = profile.name.familyName;
 
-                    // save our user to the database
-                    newUser.save(function(err) {
-                        if (err)
-                            throw err;
+                        // save our user to the database
+                        newUser.save(function (err) {
+                            if (err)
+                                throw err;
 
-                        // if successful, return the new user
-                        return done(null, newUser);
-                    });
+                            // if successful, return the new user
+                            return done(null, newUser);
+                        });
+                    } catch (e) {
+                        console.log('ERROR::: unable to signup via facebook, error: '+ e.message);
+                        return done(e)
+                    }
                 }
             });
         });

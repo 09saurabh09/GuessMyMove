@@ -11,7 +11,7 @@ $(function() {
     var gameIdLength = 5;
     var auth = $("#loggedIn").html();
     var secretKey = null;
-    var gameId = Math.random().toString(36).substring(2, 2 + gameIdLength); // Have to increase it later
+    var gameId = Math.random().toString(36).substring(2, 2 + gameIdLength).toLowerCase(); // Have to increase it later
     var playingGameId = gameId;
     var gameStarted = false;
     var playerOne = true;
@@ -163,7 +163,7 @@ $(function() {
         var data;
         if (newGameId.length === gameIdLength) {
             $('#friendGameID').prop('disabled', true);
-            data = { ownGameId: gameId, requestGameId:newGameId, userId: secretKey };
+            data = { ownGameId: gameId.toLowerCase(), requestGameId:newGameId.toLowerCase(), userId: secretKey };
             $.ajax({
                 type: "POST",
                 url: '/api/game/gameRequest',
