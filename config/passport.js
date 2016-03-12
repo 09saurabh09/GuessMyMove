@@ -1,10 +1,5 @@
 // load all the things we need
 /* globals UserModel*/
-var fs = require('fs');
-var path = require('path');
-var filePath = path.join(__dirname, 'credentials.json');
-var credentialObj = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-
 var LocalStrategy = require('passport-local').Strategy;
 var FacebookStrategy = require('passport-facebook').Strategy;
 // load up the user model

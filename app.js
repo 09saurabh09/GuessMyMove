@@ -7,7 +7,12 @@ var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
 var passport = require('passport');
 var session = require('express-session');
-require('dotenv').config();
+try {
+    require('dotenv').config();
+} catch (e) {
+    console.log("Production environment")
+}
+
 
 var RedisStore = require('connect-redis')(session);
 
