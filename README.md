@@ -11,5 +11,5 @@ PASSPORT_FB_CLIENT_SECRET = '' <br />
 PASSPORT_FB_CALLBACK = '' <br />
 
 <h5>
-Checkout project and do npm install, server will start on port 8000
+Checkout project and do npm install then run gulp, server will start with server details in logs
 </h5>
