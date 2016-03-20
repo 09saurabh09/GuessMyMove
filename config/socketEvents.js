@@ -43,7 +43,7 @@ module.exports = function(io) {
                             });
                         } else {
                             lodash.assign(gameObject, {
-                                playerOneId: user.id
+                                playerOneId: data.secretKey
                             });
                         }
 

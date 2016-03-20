@@ -28,8 +28,25 @@ router.post('/api/game/gameRequest', function(req, res, next) {
     gameController.acceptRequest(req, res);
 });
 
-router.post('/api/game/updateWinner', function(req, res, next) {
+router.post('/api/game/updateWinner',isLoggedIn, function(req, res, next) {
     gameController.updateWinner(req, res);
 });
+
+router.get('/api/users/configCall', function(req, res, next) {
+    userController.configParams(req, res);
+});
+
+// route middleware to make sure a user is logged in
+function isLoggedIn(req, res, next) {
+
+    // if user is authenticated in the session, carry on
+    if (req.isAuthenticated()) {
+        return next();
+    } else {
+        // if they aren't send them a message
+        res.send('Access Denied');
+    }
+
+}
 
 module.exports = router;
