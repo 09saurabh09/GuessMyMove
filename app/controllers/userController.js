@@ -39,6 +39,7 @@ module.exports = {
                     if (err) {
                         return next(err);
                     }
+                    //Action will be base on device
                     return res.redirect('/');
                 });
             } else {
@@ -46,5 +47,15 @@ module.exports = {
                 res.send('Please try again');
             }
         })(req, res, next);
+    },
+
+    configParams: function(req,res) {
+        var configObject = {loggedIn: false};
+        if (req.isAuthenticated()) {
+            configObject['loggedIn'] = true;
+            res.send();
+        } else {
+            res.send(configObject);
+        }
     }
 };
