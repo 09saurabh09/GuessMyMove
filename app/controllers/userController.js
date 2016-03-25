@@ -53,7 +53,7 @@ module.exports = {
         var configObject = {loggedIn: false};
         if (req.isAuthenticated()) {
             configObject['loggedIn'] = true;
-            res.send();
+            res.send(configObject);
         } else {
             res.send(configObject);
         }
