@@ -17,7 +17,7 @@ router.post('/api/users/signin', function(req, res, next) {
 });
 
 router.get('/auth/facebook', passport.authenticate('facebook', {
-    scope: 'email'
+    scope: ['email','user_friends']
 }));
 
 router.get('/auth/facebook/callback', function(req, res, next) {
