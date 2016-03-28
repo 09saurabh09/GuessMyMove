@@ -1,5 +1,5 @@
 // load all the things we need
-/* globals UserModel*/
+/* globals UserModel, FacebookService*/
 var LocalStrategy = require('passport-local').Strategy;
 var FacebookStrategy = require('passport-facebook').Strategy;
 // load up the user model
@@ -158,6 +158,8 @@ module.exports = function (passport) {
                                 throw err;
 
                             // if successful, return the new user
+                            // search for facebook friends and store them
+                            FacebookService.addFriends(token, newUser);
                             return done(null, newUser);
                         });
                     } catch (e) {

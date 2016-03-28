@@ -27,8 +27,9 @@ var userSchema = mongoose.Schema({
         token: String,
         email: String,
         name: String
-    }
-
+    },
+    isOnline: { type: Boolean, default: false },
+    friends : [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }]
 });
 
 // methods ======================

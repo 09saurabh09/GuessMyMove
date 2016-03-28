@@ -36,6 +36,10 @@ router.get('/api/users/configCall', function(req, res, next) {
     userController.configParams(req, res);
 });
 
+router.get('/api/users/getFriendsList', function(req, res, next) {
+    userController.getFriendsList(req, res);
+});
+
 // route middleware to make sure a user is logged in
 function isLoggedIn(req, res, next) {
 

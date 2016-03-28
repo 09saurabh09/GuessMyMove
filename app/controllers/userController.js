@@ -1,3 +1,4 @@
+/* globals UserModel*/
 var passport = require('passport');
 
 module.exports = {
@@ -57,5 +58,24 @@ module.exports = {
         } else {
             res.send(configObject);
         }
+    },
+
+    getFriendsList: function(req, res) {
+        var response = {data: []};
+        try {
+            var id = req.session.passport.user;
+            UserModel.findById(id)
+                .populate('friends')
+                .exec(function (err, user) {
+                    if (err) return handleError(err);
+                    response.data = user.friends;
+                    res.send(response);
+                });
+        } catch (e) {
+            console.log('ERROR ::: Error in fetching friends: '+ e.message);
+            res.send(response);
+        }
+
+
     }
 };
