@@ -107,7 +107,7 @@ server.listen(process.env.PORT || 8000, function(err) {
     if (err) {
         console.log('Error in starting server');
     } else {
-        console.log('Server started on port 8000');
+        console.log('Server started on port ' + (process.env.PORT || 3000));
     }
 });
 module.exports = app;
