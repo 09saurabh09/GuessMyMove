@@ -117,5 +117,7 @@ module.exports = {
                 globalIO.sockets.connected[socketId].emit('gameInvite', data);
             }
         });
+
+        res.send('Invite has been sent to your friend');
     }
 };
