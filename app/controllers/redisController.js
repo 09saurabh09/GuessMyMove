@@ -11,26 +11,27 @@ var redisClient = redis.createClient({
 });
 redisClient.auth(configDB.redisPassword);
 
-redisClient.on('connect', function() {
+redisClient.on('connect', function () {
     console.log('Connected to Redis');
 });
 
-redisClient.on('error', function(err) {
+redisClient.on('error', function (err) {
     console.log('Error connecting to redis' + err);
 });
 
 module.exports = {
-    setSessionID: function(key, value) {
-        redisClient.hset(idToSessionHash, key, value);
+    setSessionID: function (key, value) {
+        redisClient.set("obj_id_to_socket_id" + key, value);
+        redisClient.expire("obj_id_to_socket_id" + key, 2 * 60 * 60 * 1000);
         console.log('new ' + idToSessionHash + ' mapping created');
     },
-    setKey: function(key, value) {
+    setKey: function (key, value) {
         redisClient.set(key, value);
         redisClient.expire(key, 1500);
         console.log('mapping for game: ' + key + ' created');
     },
-    getSocketId: function(key, callback) {
-        redisClient.hget(idToSessionHash, key, function(err, data) {
+    getSocketId: function (key, callback) {
+        redisClient.get("obj_id_to_socket_id" + key, function (err, data) {
             if (err) {
                 console.log('Redis Error in retrieving data for hash ' + idToSessionHash + 'for key ' + key + 'error: ' + err.message);
                 callback(err);
@@ -39,8 +40,8 @@ module.exports = {
             }
         });
     },
-    getKey: function(key, callback) {
-        redisClient.get(key, function(err, data) {
+    getKey: function (key, callback) {
+        redisClient.get(key, function (err, data) {
             if (err) {
                 console.log('Redis Error in retrieving data for gameId: ' + key + 'error: ' + err.message);
                 callback(err);

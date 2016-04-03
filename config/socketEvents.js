@@ -6,17 +6,47 @@
 var lodash = require('lodash');
 
 module.exports = function(io) {
+    global['globalIO'] = io;
     function customError(socketId, errorCode) {
         //Need to define error codes for appropriate action on frontend
         io.sockets.connected[socketId].emit('errorEvent', 0);
     };
 
     io.on('connection', function(socket) {
-        console.log('a user connected');
+        if (socket.request.session && socket.request.session.passport) {
+            redisController.setSessionID(socket.request.session.passport.user, socket.id);
+            UserModel.findById(socket.request.session.passport.user, function (err, user) {
+                if (err) {
+                    console.log("ERROR ::: Unable to find user, error " +err.message);
+                } else {
+                    user.isOnline = true;
+                    user.save(function (err) {
+                        if (err)
+                            throw err;
+                    })
+                }
+            });
+        }
+
+        socket.on('disconnect', function() {
+            if (socket.request.session.passport) {
+                UserModel.findById(socket.request.session.passport.user, function (err, user) {
+                    if (err) {
+                        console.log("ERROR ::: Unable to find user, error " +err.message);
+                    } else {
+                        user.isOnline = false;
+                        user.save(function (err) {
+                            if (err)
+                                throw err;
+                        })
+                    }
+                });
+            }
+        });
 
         socket.on('registerUser', function(data) {
             if (socket.request.session.passport) {
-                redisController.setSessionID(socket.request.session.passport.user, socket.id);
+                //redisController.setSessionID(socket.request.session.passport.user, socket.id);
             } else {
                 redisController.setSessionID(data.userId, socket.id);
             }

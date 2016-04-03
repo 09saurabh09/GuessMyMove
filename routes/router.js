@@ -28,6 +28,10 @@ router.post('/api/game/gameRequest', function(req, res, next) {
     gameController.acceptRequest(req, res);
 });
 
+router.post('/api/game/gameInvite', function(req, res, next) {
+    gameController.gameInvite(req, res);
+});
+
 router.post('/api/game/updateWinner',isLoggedIn, function(req, res, next) {
     gameController.updateWinner(req, res);
 });
@@ -36,8 +40,8 @@ router.get('/api/users/configCall', function(req, res, next) {
     userController.configParams(req, res);
 });
 
-router.get('/api/users/getFriendsList', function(req, res, next) {
-    userController.getFriendsList(req, res);
+router.get('/api/users/getOnlineFriendsList', function(req, res, next) {
+    userController.getOnlineFriendsList(req, res);
 });
 
 // route middleware to make sure a user is logged in

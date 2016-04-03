@@ -3,8 +3,8 @@
  */
 /* globals UserModel*/
 var request = require('request');
-var mongoose = require('mongoose');
 var graphAPIHost = 'https://graph.facebook.com';
+
 module.exports = {
     getAllFriends: function(token, callback) {
         request(graphAPIHost + '/me/friends?access_token=' + token, function (error, response, body) {
