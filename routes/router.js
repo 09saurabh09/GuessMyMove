@@ -40,7 +40,7 @@ router.get('/api/users/configCall', function(req, res, next) {
     userController.configParams(req, res);
 });
 
-router.get('/api/users/getOnlineFriendsList', function(req, res, next) {
+router.get('/api/users/getOnlineFriendsList',isLoggedIn, function(req, res, next) {
     userController.getOnlineFriendsList(req, res);
 });
 

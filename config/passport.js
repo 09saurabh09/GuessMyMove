@@ -145,10 +145,15 @@ module.exports = function (passport) {
                         newUser.facebook.id = profile.id; // set the users facebook id
                         newUser.facebook.token = token; // we will save the token that facebook provides to the user
                         newUser.facebook.name = profile.name.givenName + ' ' + profile.name.familyName; // look at the passport user profile to see how names are returned
-                        newUser.facebook.email = profile.emails[0].value; // facebook can return multiple emails so we'll take the first
 
-                        // Update local profile also, if not updated
-                        newUser.local.email = profile.emails[0].value;
+                        if(profile.emails.length > 0) {
+                            newUser.facebook.email = profile.emails[0].value; // facebook can return multiple emails so we'll take the first
+
+                            // Update local profile also, if not updated
+                            newUser.local.email = profile.emails[0].value;
+                        } else {
+                            newUser.local.email = profile.id + '@guessmymove.com';
+                        }
                         newUser.local.firstName = profile.name.givenName;
                         newUser.local.lastName = profile.name.familyName;
 

@@ -1,4 +1,4 @@
-/* globals UserModel*/
+/* globals UserModel, FacebookService*/
 var passport = require('passport');
 
 module.exports = {
@@ -76,6 +76,8 @@ module.exports = {
 
     // Get list of online friends
     getOnlineFriendsList: function (req, res) {
+        //Initially we are not ahving any queue and updating friend list on each request
+        FacebookService.addFriends(req.user.facebook.token, req.user);
         var response = {data: []};
         try {
             var id = req.session.passport.user;

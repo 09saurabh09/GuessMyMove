@@ -24,7 +24,7 @@ module.exports = {
                 .exec(function(err, records) {
                     if (err) return null;
                     var newFriends = records.map(function(friend) {return friend.id});
-                    user.friends = user.friends.concat(newFriends);
+                    user.friends = newFriends;
 
                     user.save(function(err) {
                         if (err) console.log(err.message);
